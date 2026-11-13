@@ -10,8 +10,7 @@ export function openPresenter() {
 
 export function toggleTheme() {
   const root = document.documentElement;
-  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
-  root.dataset.theme = dark ? 'light' : 'dark';
+  if (root.dataset.theme === 'dark') delete root.dataset.theme; else root.dataset.theme = 'dark';
 }
 
 /** Global presenter keys. Works with most clickers (they send arrows / PageUp / PageDown). */

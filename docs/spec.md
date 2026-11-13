@@ -80,6 +80,13 @@ Vendor names change often; **verify labels against current vendor docs before ea
 - **Unit (vitest):** beat navigation bounds, step jumps, derived channel counts under consent on/off.
 - **Walkthrough (Playwright):** steps through every beat in every vendor mode, fails on console errors, saves screenshots to `artifacts/`.
 
-## 7. Out of scope for v1
+## 7. Visual and copy guidelines (v2)
+
+- Indegene brand from indegene.com: ink `#07091D`, navy `#0F0A19`, blue `#0047AB`, bright blue `#1B70E0`, cyan `#04BEF2`, purple `#7167B8`, magenta `#DC1380`, cards `#F8F8F8`, Outfit.
+- One gradient word per heading. Magenta only for conflicts and alerts.
+- Screens look like the systems they represent (record windows, data tables, golden record, segment builder, inbox, rep app, phone notification).
+- Copy: short labels and data, at most one line under a heading. No bold lead-ins, slogans, rule-of-three lines or middle-dot separators. Explanations live in presenter notes.
+
+## 8. Out of scope for v1
 
 Second HCP / failure scenario, multiple audience lenses beyond deep dive, live data connections, backend.

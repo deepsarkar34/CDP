@@ -89,14 +89,14 @@
     }
   ],
   "clean": [
-    ["Name", "BROWN, JOHN A · Dr John Brown", "John A. Brown", "Parse name parts, fix casing"],
+    ["Name", "BROWN, JOHN A | Dr John Brown", "John A. Brown", "Parse name parts, fix casing"],
     ["Duplicates", "2 CRM records", "1 CRM record", "Remove duplicates within a source"],
-    ["Specialty", "Ophth-Ret · Retina", "Ophthalmology, retina (RET)", "Map every source to one specialty list"],
+    ["Specialty", "Ophth-Ret | Retina", "Ophthalmology, retina (RET)", "Map every source to one specialty list"],
     ["Address", "12 Main St Tarrytown", "12 Main Street, Tarrytown, NY 10591", "Postal address standardization"],
     ["Email", "JBrown@RetinaClinic.example", "jbrown@retinaclinic.example", "Lowercase and validate"],
     ["Dates", "10/14/26", "2026-10-14", "One date format everywhere"],
     ["Patient identity", "vendor token dvt_8KQ2", "{TOKEN}", "Re-tokenize into your own token space"],
-    ["Quality checks", "unchecked", "NPI valid · required fields present", "Reject or flag records that fail"]
+    ["Quality checks", "unchecked", "NPI valid, required fields present", "Reject or flag records that fail"]
   ],
   "golden": [
     ["Master ID", "HCP-004812", ["mdm"]],

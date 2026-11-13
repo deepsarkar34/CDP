@@ -24,15 +24,21 @@ The build is static, so it runs offline. The fonts load from Google Fonts when o
 | → / Space / PageDown | next beat (most clickers work) |
 | ← / PageUp | previous beat |
 | 1–7 | jump to a step |
-| D | deep dive (technical layer) on/off |
+| D | technical detail on/off |
 | V | cycle vendor |
 | C | toggle Dr. Brown's email consent (what-if) |
-| P | open presenter window (notes, next beat, 12:00 timer) |
+| P | open presenter notes (notes, next beat, 12:00 timer) |
 | F | fullscreen |
 | T | light/dark theme |
 | R | reset |
 
 Put the main window on the projector (press F) and the presenter window on your laptop. The two windows stay in sync, so you can drive the demo from either one.
+
+## Branding
+
+The look follows indegene.com: navy chrome, white stage, the Outfit typeface, and one blue to purple to magenta gradient word per heading. Magenta is reserved for conflicts and alerts. The colour tokens are at the top of `src/styles.css`.
+
+To use the official logo, put a white version at `src/assets/logo.svg` (or `logo.png`). Until then the name is shown as plain text.
 
 ## Customize per client
 

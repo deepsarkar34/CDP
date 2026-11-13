@@ -29,7 +29,7 @@ for (const vendor of ['neutral', 'salesforce', 'adobe', 'databricks']) {
   while (true) {
     await page.waitForTimeout(vendor === 'neutral' ? 1400 : 500);
     if (vendor === 'neutral' || beat % 4 === 0) await page.screenshot({ path: `${out}/${vendor}-${String(beat).padStart(2, '0')}.png` });
-    const disabled = await page.locator('.nav .btn.primary').isDisabled();
+    const disabled = await page.locator('.foot .btn.primary').isDisabled();
     if (disabled) break;
     await page.keyboard.press('ArrowRight');
     beat++;

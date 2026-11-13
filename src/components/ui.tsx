@@ -1,12 +1,29 @@
 import { AnimatePresence, motion, animate, useMotionValue, useTransform } from 'framer-motion';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 
-export function StageHead({ eyebrow, title, lede }: { eyebrow: string; title: string; lede: ReactNode }) {
+/** Renders "Text with *one word* highlighted" with the brand gradient on the starred part. */
+export function GradText({ text }: { text: string }) {
+  return <>{text.split(/(\*[^*]+\*)/).map((p, i) => p.startsWith('*') ? <span key={i} className="g">{p.slice(1, -1)}</span> : <Fragment key={i}>{p}</Fragment>)}</>;
+}
+
+export function Head({ title, sub, meta }: { title: string; sub?: ReactNode; meta?: ReactNode }) {
   return (
-    <div className="stage-head">
-      <span className="eyebrow">{eyebrow}</span>
-      <h2>{title}</h2>
-      <p className="lede">{lede}</p>
+    <div className="head">
+      <div>
+        <h2><GradText text={title} /></h2>
+        {sub && <p className="sub">{sub}</p>}
+      </div>
+      {meta && <div className="meta">{meta}</div>}
+    </div>
+  );
+}
+
+/** A product-style window with a title bar. */
+export function Win({ name, right, children, className = '', style, flush }: { name: ReactNode; right?: ReactNode; children: ReactNode; className?: string; style?: CSSProperties; flush?: boolean }) {
+  return (
+    <div className={`win ${className}`} style={style}>
+      <div className="win-bar"><span className="name">{name}</span>{right && <span className="right">{right}</span>}</div>
+      <div className="win-body" style={flush ? { padding: 0 } : undefined}>{children}</div>
     </div>
   );
 }
@@ -18,16 +35,16 @@ export function DeepDive({ show, title, children }: { show: boolean; title: stri
     <AnimatePresence initial={false}>
       {show && (
         <motion.section
+          ref={ref}
           className="deep"
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
           style={{ overflow: 'hidden' }}
-          onAnimationComplete={def => { if (def && (def as { opacity?: number }).opacity === 1) ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
-          ref={ref}
+          onAnimationComplete={def => { if ((def as { opacity?: number })?.opacity === 1) ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }}
         >
-          <span className="eyebrow">Deep dive · {title}</span>
+          <span className="label">Technical detail: {title}</span>
           {children}
         </motion.section>
       )}
@@ -35,7 +52,7 @@ export function DeepDive({ show, title, children }: { show: boolean; title: stri
   );
 }
 
-/** Fades content in once its beat is reached; keeps layout stable by reserving space. */
+/** Fades content in once its beat is reached; reserves space so the layout does not jump. */
 export function Reveal({ when, children, delay = 0, y = 10 }: { when: boolean; children: ReactNode; delay?: number; y?: number }) {
   return (
     <motion.div initial={false} animate={when ? { opacity: 1, y: 0 } : { opacity: 0, y }} transition={{ duration: 0.4, delay: when ? delay : 0 }} style={{ pointerEvents: when ? 'auto' : 'none' }} aria-hidden={!when}>
@@ -44,7 +61,6 @@ export function Reveal({ when, children, delay = 0, y = 10 }: { when: boolean; c
   );
 }
 
-/** Animated number counter. */
 export function Counter({ value, className }: { value: number; className?: string }) {
   const mv = useMotionValue(value);
   const text = useTransform(mv, n => Math.round(n).toLocaleString('en-US'));
