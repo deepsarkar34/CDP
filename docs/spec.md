@@ -19,7 +19,7 @@ Source of truth for the story: the original prototype `Dr. Brown's Data Journey`
 |---|---|
 | Format | Custom scripted demo app (not slides, not free-exploration) |
 | Pacing | "Beats": each → press plays the next scripted moment |
-| Length | ~12 minutes, ~2 minutes per step, one "wow" moment per step |
+| Length | ~15 minutes with Decide and Learn (Learn can be skipped) |
 | Audience depth | Outcome-first default; `D` toggles a **deep-dive** technical layer |
 | Vendor | **Vendor-neutral by default**, toggle for Salesforce Data 360, Adobe Real-Time CDP, Databricks (composable) |
 | Data | Fully fictional; brand is "Acme Pharma" (rename in `src/scenario/scenario.json`) |
@@ -87,6 +87,18 @@ Vendor names change often; **verify labels against current vendor docs before ea
 - Screens look like the systems they represent (record windows, data tables, golden record, segment builder, inbox, rep app, phone notification).
 - Copy: short labels and data, at most one line under a heading. No bold lead-ins, slogans, rule-of-three lines or middle-dot separators. Explanations live in presenter notes.
 
-## 8. Out of scope for v1
+## 8. Decide and Learn steps (v3)
+
+- **Decide** (step 07, between Segment and Activate). A segment says who; the decision layer decides what next for each person. One pipeline of five sublayers: 1 guardrails (rules), 2 predict response (ML), 3 lift over the 15% do-nothing baseline (ML), 4 value vs cost (lift × $2,000 − cost), 5 choose within capacity (6 rep slots, 8 doctors).
+- Mode switch (`M`): Rules plus machine learning picks the remote call (+$230) and ranks slots by lift (Dr. Brown #1). Rules only switches off sublayers 2 to 4, picks the webinar email (brand priority 1) and ranks slots by propensity (Dr. Brown #7, misses the week).
+- Sublayers auto-play at 1.4 s each, pulse on the map and in the step, can be clicked to jump, and are skipped/crossed out in Rules only. Reduced motion shows the finished state.
+- The language model never decides: models and rules choose; an Agentforce agent (Salesforce mode) or an AI agent (other modes) only writes the rep's explanation.
+- Email consent off (`C`) blocks the email options at the guardrail and skips email touches in the next best experience.
+- Activate follows the decision: rep card and live-event decision line show the chosen action.
+- **Learn** (step 09): three outcomes and what changes next week; holdout of 10% (124 of 1,240 HCPs) for 90 days.
+- Data in `scenario.json` (`decide`, `learn`); logic in `src/decision.ts`, unit tested against the brief's tables. All numbers illustrative.
+- Presenter target raised to 15 minutes.
+
+## 9. Out of scope for v1
 
 Second HCP / failure scenario, multiple audience lenses beyond deep dive, live data connections, backend.

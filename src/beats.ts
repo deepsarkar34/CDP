@@ -1,12 +1,12 @@
 // The demo script. Each beat is one press of →. Stages render from their local beat index.
 
-export type StepId = 'hook' | 'capture' | 'clean' | 'master' | 'resolve' | 'segment' | 'activate';
+export type StepId = 'hook' | 'capture' | 'clean' | 'master' | 'resolve' | 'segment' | 'decide' | 'activate' | 'learn';
 
 export interface StepDef {
   id: StepId;
   title: string;
   sub: string;
-  zone: 'sources' | 'engineering' | 'cdp' | 'channels';
+  zone: 'sources' | 'engineering' | 'cdp' | 'decision' | 'channels' | 'feedback';
   /** Presenter notes, one per beat. Length defines the number of beats in the step. */
   notes: string[];
 }
@@ -62,13 +62,27 @@ export const STEPS: StepDef[] = [
     ],
   },
   {
+    id: 'decide', title: 'Decide', sub: 'Next best action', zone: 'decision',
+    notes: [
+      'A segment says who. The decision layer decides what to do next for each person: which action, which channel, which content, when, or nothing. Yesterday his dosing-guide download asked it what to do next for Dr. Brown. Let the five sublayers play: guardrails, predicted response, lift, value against cost, then a choice within the rep\'s capacity. Press M to compare Rules only, where sublayers 2 to 4 switch off and a fixed brand priority list picks.',
+      'His rep sees a remote call within five days, with the reasons. An Agentforce agent wrote that explanation from the engine\'s reasons; the models and rules made the choice. The follow-up touches are planned too. In Rules only the webinar wins on the priority list, Dr. Brown misses this week\'s call slots, and nothing plans the next touch.',
+    ],
+  },
+  {
     id: 'activate', title: 'Activate', sub: 'Push and pull', zone: 'channels',
     notes: [
       'Push channels get a list sent to them on each refresh. Pull channels, like the portal, ask about one person when he arrives. Click a band to show the route.',
       'This is what he actually sees: an email, a visit suggestion for his rep, a sponsored unit on a publisher site, and a personalized portal. Press C to show email dropping out on its own.',
       'He downloads the dosing guide. Watch the log: the event reaches the CDP, the rule matches, and his rep gets an alert in about two and a half seconds. This runs per event rather than per segment refresh.',
       'Clean rooms come up a lot. With activation the publisher gets your list. In a clean room both sides bring encrypted keys and only the overlap count comes out.',
-      'Recap the journey in one breath, then open for questions.',
+      'Recap the journey in one breath, then open for questions, or go on to Learn.',
+    ],
+  },
+  {
+    id: 'learn', title: 'Learn', sub: 'Outcomes feed back', zone: 'feedback',
+    notes: [
+      'Click each outcome. Whatever happens changes next week: the model updates its estimates, and rules such as topic suppression apply the same day.',
+      'To prove the lift, hold back 10 percent of the segment from suggestions and compare after 90 days. Without a holdout you measure activity, not lift.',
     ],
   },
 ];
@@ -82,4 +96,4 @@ export const firstBeatOf = (step: number) => BEATS.findIndex(b => b.step === ste
 export const clampBeat = (i: number) => Math.max(0, Math.min(BEATS.length - 1, i));
 
 /** Target talk time in seconds (used by the presenter timer). */
-export const TARGET_SECONDS = 12 * 60;
+export const TARGET_SECONDS = 15 * 60;

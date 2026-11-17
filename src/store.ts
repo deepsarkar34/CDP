@@ -2,12 +2,21 @@ import { create } from 'zustand';
 import { BEATS, clampBeat, firstBeatOf } from './beats';
 import { VENDOR_ORDER, type VendorId } from './vendors';
 import scenario from './scenario/scenario.json';
+import type { Mode } from './decision';
 
 export interface DemoState {
   beat: number;
   vendor: VendorId;
   deepDive: boolean;
   consent: boolean;
+  /** Decision layer mode: rules plus machine learning, or rules only. */
+  mode: Mode;
+  /** Decide step playback: highest sublayer revealed (0 = none, 5 = finished). Local to this window. */
+  sub: number;
+  /** True while the Decide sublayers are auto-playing. Local to this window. */
+  subPlaying: boolean;
+  /** Sublayer clicked on the map from another step; Decide starts from it on entry. */
+  subRequest: number | null;
   startedAt: number | null;
 }
 
@@ -19,12 +28,16 @@ export interface DemoActions {
   cycleVendor: () => void;
   toggleDeepDive: () => void;
   toggleConsent: () => void;
+  toggleMode: () => void;
+  setMode: (m: Mode) => void;
+  setSub: (n: number, playing?: boolean) => void;
+  requestSub: (n: number | null) => void;
   reset: () => void;
   /** Apply state received from another window (presenter sync). */
   hydrate: (s: Partial<DemoState>) => void;
 }
 
-export const initialState: DemoState = { beat: 0, vendor: 'neutral', deepDive: false, consent: true, startedAt: null };
+export const initialState: DemoState = { beat: 0, vendor: 'neutral', deepDive: false, consent: true, mode: 'ml', sub: 0, subPlaying: false, subRequest: null, startedAt: null };
 
 const started = (s: DemoState) => s.startedAt ?? Date.now();
 
@@ -37,6 +50,10 @@ export const useDemo = create<DemoState & DemoActions>((set, get) => ({
   cycleVendor: () => { const i = VENDOR_ORDER.indexOf(get().vendor); set({ vendor: VENDOR_ORDER[(i + 1) % VENDOR_ORDER.length] }); },
   toggleDeepDive: () => set(s => ({ deepDive: !s.deepDive })),
   toggleConsent: () => set(s => ({ consent: !s.consent })),
+  toggleMode: () => set(s => ({ mode: s.mode === 'ml' ? 'rules' : 'ml' })),
+  setMode: mode => set({ mode }),
+  setSub: (sub, playing = false) => set({ sub, subPlaying: playing }),
+  requestSub: subRequest => set({ subRequest }),
   reset: () => set({ ...initialState }),
   hydrate: s => set(s),
 }));

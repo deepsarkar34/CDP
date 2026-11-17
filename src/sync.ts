@@ -1,7 +1,7 @@
 // Keeps the main (projector) window and the presenter window in lockstep via BroadcastChannel.
 import { useDemo, type DemoState } from './store';
 
-const KEYS: (keyof DemoState)[] = ['beat', 'vendor', 'deepDive', 'consent', 'startedAt'];
+const KEYS: (keyof DemoState)[] = ['beat', 'vendor', 'deepDive', 'consent', 'mode', 'startedAt'];
 
 export function startSync() {
   if (typeof BroadcastChannel === 'undefined') return () => {};

@@ -12,32 +12,42 @@ import { Clean } from './stages/Clean';
 import { Master } from './stages/Master';
 import { Resolve } from './stages/Resolve';
 import { Segment } from './stages/Segment';
+import { Decide } from './stages/Decide';
 import { Activate } from './stages/Activate';
+import { Learn } from './stages/Learn';
+import { SUBLAYERS, isActive, decisionFor, type Mode } from './decision';
 import type { StageProps } from './stages/types';
 
-const STAGES: ComponentType<StageProps>[] = [Hook, Capture, Clean, Master, Resolve, Segment, Activate];
+const STAGES: ComponentType<StageProps>[] = [Hook, Capture, Clean, Master, Resolve, Segment, Decide, Activate, Learn];
+const DECIDE = 6;
 
 // Short, factual status per step: what the system knows about him right now.
-const STATUS = [
+const status = (step: number, mode: Mode, consent: boolean) => [
   '6 fragments, not linked yet',
   '6 records in 5 systems',
   'Records standardized, patient IDs re-tokenized',
   `Master ID ${scenario.hcp.masterId}`,
   '5 identifiers on one profile',
   `In ${scenario.segment.name} (1,240 HCPs)`,
+  `Next action: ${decisionFor(mode, consent).label.toLowerCase()}`,
   'Reached in 5 channels',
-];
+  'Outcome feeds next week\'s decision',
+][step];
 
-const ZONES: { key: 'sources' | 'engineering' | 'cdp' | 'channels'; steps: number[] }[] = [
+type ZoneKey = 'sources' | 'engineering' | 'cdp' | 'decision' | 'channels' | 'feedback';
+const ZONES: { key: ZoneKey; steps: number[] }[] = [
   { key: 'sources', steps: [0, 1] },
   { key: 'engineering', steps: [2, 3] },
   { key: 'cdp', steps: [4, 5] },
-  { key: 'channels', steps: [6] },
+  { key: 'decision', steps: [6] },
+  { key: 'channels', steps: [7] },
+  { key: 'feedback', steps: [8] },
 ];
 
 export default function App() {
   useKeyboard();
-  const { beat, vendor, deepDive, consent, next, prev, jumpStep, setVendor, toggleDeepDive, toggleConsent } = useDemo();
+  const { beat, vendor, deepDive, consent, mode, sub, subPlaying, setSub, requestSub, next, prev, jumpStep, setVendor, toggleDeepDive, toggleConsent } = useDemo();
+  const zoneName = (k: ZoneKey) => (k === 'decision' ? 'Decision layer' : k === 'feedback' ? 'Feedback' : v.zones[k]);
   const b = currentBeat(beat);
   const v = VENDORS[vendor];
   const Stage = STAGES[b.step];
@@ -65,8 +75,8 @@ export default function App() {
         <nav className="map" aria-label="Pipeline">
           {ZONES.map(z => (
             <div key={z.key} className="zone">
-              <div className="zone-name" title={v.zones[z.key]}>
-                {v.zones[z.key]}{z.key === 'cdp' && v.partners ? <span className="partner">with partners</span> : null}
+              <div className="zone-name" title={zoneName(z.key)}>
+                {zoneName(z.key)}{z.key === 'cdp' && v.partners ? <span className="partner">with partners</span> : null}
               </div>
               <div className="zone-steps">
                 {z.steps.map(i => {
@@ -80,6 +90,23 @@ export default function App() {
                   );
                 })}
               </div>
+              {z.key === 'decision' && (
+                <div className="subs" aria-label="Decision layer sublayers">
+                  {SUBLAYERS.map(s => {
+                    const active = isActive(s.n, mode);
+                    const here = b.step === DECIDE;
+                    const done = active && (b.step > DECIDE || (here && sub >= s.n));
+                    const live = active && here && sub === s.n && subPlaying;
+                    return (
+                      <button key={s.n} className={`sl ${done ? 'done' : ''} ${live ? 'live' : ''} ${active ? '' : 'off'}`}
+                        title={`Sublayer ${s.n}: ${s.name}${active ? '' : ' (off in Rules only)'}`}
+                        onClick={() => { if (!active) return; if (here) setSub(s.n, s.n < 5); else { requestSub(s.n); jumpStep(DECIDE); } }}>
+                        {s.short}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           ))}
         </nav>
@@ -97,7 +124,7 @@ export default function App() {
       <footer className="foot">
         <div className="who">
           <div className="avatar" aria-hidden>{scenario.hcp.initials}</div>
-          <span><b style={{ fontWeight: 600 }}>{scenario.hcp.short}</b> <span className="muted">{STATUS[b.step]}</span></span>
+          <span><b style={{ fontWeight: 600 }}>{scenario.hcp.short}</b> <span className="muted">{status(b.step, mode, consent)}</span></span>
         </div>
         <div className="dots" aria-label={`Beat ${beat + 1} of ${BEATS.length}`}>
           {Array.from({ length: stepBeats }, (_, i) => <span key={i} className={i <= b.local ? 'on' : ''} />)}

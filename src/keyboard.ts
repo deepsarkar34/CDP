@@ -28,6 +28,7 @@ export function useKeyboard(opts: { presenterWindow?: boolean } = {}) {
       else if (k === 'd' || k === 'D') s.toggleDeepDive();
       else if (k === 'v' || k === 'V') s.cycleVendor();
       else if (k === 'c' || k === 'C') s.toggleConsent();
+      else if (k === 'm' || k === 'M') s.toggleMode();
       else if (k === 'r' || k === 'R') s.reset();
       else if (k === 't' || k === 'T') toggleTheme();
       else if ((k === 'p' || k === 'P') && !opts.presenterWindow) openPresenter();

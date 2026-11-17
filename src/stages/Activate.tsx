@@ -4,7 +4,8 @@ import scenario from '../scenario/scenario.json';
 import type { StageProps } from './types';
 import type { VendorPack } from '../vendors';
 import { DeepDive, Head, Win } from '../components/ui';
-import { brownChannels, channelCounts } from '../store';
+import { brownChannels, channelCounts, useDemo } from '../store';
+import { decisionFor } from '../decision';
 
 type Ch = 'crm' | 'email' | 'media' | 'rt' | 'web';
 const ORDER: Ch[] = ['crm', 'email', 'media', 'rt', 'web'];
@@ -123,6 +124,8 @@ function SankeyPanel({ ch, setCh, v, consent }: { ch: Ch; setCh: (c: Ch) => void
 /* Beat 1: what he sees in each channel */
 function Experience({ consent }: { consent: boolean }) {
   const reach = brownChannels(consent);
+  const d = decisionFor(useDemo(s => s.mode), consent);
+  const webinar = d.action.id === 'webinar';
   return (
     <div style={{ display: 'grid', gap: 14, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', alignItems: 'start' }}>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
@@ -130,16 +133,22 @@ function Experience({ consent }: { consent: boolean }) {
           {reach.email ? (
             <div style={{ display: 'grid', gap: 6 }}>
               <span className="muted" style={{ fontSize: 13 }}>{scenario.brand} Medical Information</span>
-              <span style={{ fontWeight: 600 }}>Updated dosing guidance for retina specialists</span>
-              <span style={{ fontSize: 14 }}>Dear Dr. Brown, the dosing guide you viewed last week now includes the 16-week interval data.</span>
+              {webinar ? <>
+                <span style={{ fontWeight: 600 }}>Invitation: retina webinar</span>
+                <span style={{ fontSize: 14 }}>Dear Dr. Brown, you are invited to our upcoming webinar for retina specialists.</span>
+              </> : <>
+                <span style={{ fontWeight: 600 }}>Updated dosing guidance for retina specialists</span>
+                <span style={{ fontSize: 14 }}>Dear Dr. Brown, the dosing guide you viewed last week now includes the 16-week interval data.</span>
+              </>}
               <span className="tag blue" style={{ justifySelf: 'start' }}>Approved content</span>
             </div>
           ) : <span className="tag alert" style={{ justifySelf: 'start' }}>No email consent</span>}
         </Win>
       </motion.div>
       <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-        <Win name="Rep app" right="Today">
-          <span style={{ fontWeight: 600 }}>Suggested visit: Dr. John Brown</span>
+        <Win name="Rep app" right="Today" style={{ opacity: d.repCall ? 1 : 0.6 }}>
+          <span style={{ fontWeight: 600 }}>{d.repCall ? 'Dr. John Brown: remote call within 5 days' : 'Dr. John Brown: no call slot this week'}</span>
+          {!d.repCall && <span className="tag" style={{ justifySelf: 'start' }}>Rolls to next week (#{d.brownRank} of 8)</span>}
           <dl className="fields" style={{ gridTemplateColumns: '120px 1fr' }}>
             <dt>Propensity</dt><dd>0.82</dd>
             <dt>Last visit</dt><dd>81 days ago</dd>
@@ -171,10 +180,11 @@ function Experience({ consent }: { consent: boolean }) {
 
 /* Beat 2: live event */
 function LiveEvent({ consent, v }: { consent: boolean; v: VendorPack }) {
+  const d = decisionFor(useDemo(s => s.mode), consent);
   const steps = [
     { t: '0.0s', s: 'Dosing guide downloaded on the HCP site' },
     { t: '0.8s', s: `Event received by ${v.id === 'neutral' ? 'the CDP' : v.zones.cdp}` },
-    { t: '1.6s', s: `Rule matched: download and in ${scenario.segment.name}` },
+    { t: '1.6s', s: `Decision layer chose: ${d.label.toLowerCase()}` },
     { t: '2.4s', s: 'Rep alerted' },
     { t: '3.2s', s: consent ? 'Follow-up email journey started' : 'Email skipped, no consent' },
   ];
@@ -209,7 +219,7 @@ function LiveEvent({ consent, v }: { consent: boolean; v: VendorPack }) {
             <motion.div key="rep" className="notif" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
               <span className="app-name"><span>Rep app</span><span>now</span></span>
               <strong>Dr. Brown downloaded the dosing guide</strong>
-              <span className="muted" style={{ fontSize: 13 }}>In {scenario.segment.name}. Suggest a follow-up.</span>
+              <span className="muted" style={{ fontSize: 13 }}>{d.repCall ? 'Remote call within 5 days' : 'No call slot this week'}</span>
             </motion.div>
           )}
           {shown >= 5 && consent && (

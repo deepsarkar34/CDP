@@ -2,7 +2,7 @@
 
 A live, presenter-driven demo that explains how a customer data platform (CDP) works by following one HCP, Dr. Brown, from five messy source systems to five live channels. It is built for 10–15 minute pitches to pharma clients and prospects in a mixed room.
 
-**Hook → Capture → Clean → Master → Resolve → Segment → Activate**
+**Question → Capture → Clean → Master → Resolve → Segment → Decide → Activate → Learn**
 
 It is vendor-neutral by default, with one-click relabelling for **Salesforce Data 360**, **Adobe Real-Time CDP** and a composable **Databricks** stack. All people, IDs and counts are fictional.
 
@@ -23,10 +23,11 @@ The build is static, so it runs offline. The fonts load from Google Fonts when o
 |---|---|
 | → / Space / PageDown | next beat (most clickers work) |
 | ← / PageUp | previous beat |
-| 1–7 | jump to a step |
+| 1–9 | jump to a step |
 | D | technical detail on/off |
 | V | cycle vendor |
 | C | toggle Dr. Brown's email consent (what-if) |
+| M | Decide step: switch between Rules only and Rules plus machine learning |
 | P | open presenter notes (notes, next beat, 12:00 timer) |
 | F | fullscreen |
 | T | light/dark theme |
